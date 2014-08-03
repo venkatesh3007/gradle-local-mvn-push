@@ -68,7 +68,7 @@ Note for Windows users: remember that if you are using the graddle wrapper, you 
 
 ## License
 
-    Copyright 2013 Chris Banes
+    Copyright 2014 Sergi Martínez
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

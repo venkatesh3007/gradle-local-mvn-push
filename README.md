@@ -51,7 +51,7 @@ POM_PACKAGING=aar
 
 ### 3. Call the script from each sub-modules build.gradle
 
-Add the following at the end of each `build.gradle` that you wish to upload:
+Add the following at the end of the `build.gradle` for each module you wish to upload:
 
 ```groovy
 apply from: 'https://raw.github.com/sergiandreplace/gradle-local-mvn-push/master/gradle-local-mvn-push.gradle'

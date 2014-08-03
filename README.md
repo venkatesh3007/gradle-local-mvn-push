@@ -1,84 +1,70 @@
-gradle-mvn-push
+gradle-local-mvn-push
 ===============
 
-See this blog post for more context on this 'library': [http://chris.banes.me/2013/08/27/pushing-aars-to-maven-central/](http://chris.banes.me/2013/08/27/pushing-aars-to-maven-central/).
+This work is forked from Chris Bane's [gradle-mvn-push](https://github.com/chrisbanes/gradle-mvn-push). Thank's to Crhis for his work, as it really saved me a lot of hours. You're my hero :)
+
+The initial idea of this script is to automate the deploy of android aar libraries into a local maven repository. The whole picture is to use github as a maven repository by just comitting the changes generated in the local one after executing the script.
 
 
 ## Usage
 
-### 1. Have a working Gradle build
-This is upto you.
 
-### 2. Update your home gradle.properties
+### 1. Setup your local repository path
 
-This will include the username and password to upload to the Maven server and so that they are kept local on your machine. The location defaults to `USER_HOME/.gradle/gradle.properties`.
-
-It may also include your signing key id, password, and secret key ring file (for signed uploads).  Signing is only necessary if you're putting release builds of your project on maven central.
+Modify (or create) the file  `USER_HOME/.gradle/gradle.properties` to include the path to your local repository.
 
 ```properties
-NEXUS_USERNAME=chrisbanes
-NEXUS_PASSWORD=g00dtry
-
-signing.keyId=ABCDEF12
-signing.password=n1c3try
-signing.secretKeyRingFile=~/.gnupg/secring.gpg
+REPOSITORY_PATH = file://path/to/your/repo
 ```
+Be sure you don't include the / at the end of the path
 
-### 3. Create project root gradle.properties
-You may already have this file, in which case just edit the original. This file should contain the POM values which are common to all of your sub-project (if you have any). For instance, here's [ActionBar-PullToRefresh's](https://github.com/chrisbanes/ActionBar-PullToRefresh):
+The script will deploy the artifacts into a release subfolder, or into a snapshot folder if they have the SNAPSHOT word in the `VERSION_NAME` variable.
+
+### 2. Create your gradle.properties
+
+You can create a single properties file in your module folder (if you are just uploading one) or split it into several files, placing in your project root properties the common values and adding one properties file into each module for specific settings.
+
+This is an example of the supported properties:
 
 ```properties
-VERSION_NAME=0.9.2-SNAPSHOT
-VERSION_CODE=92
-GROUP=com.github.chrisbanes.actionbarpulltorefresh
+VERSION_NAME=1.0.0
+VERSION_CODE=1
+GROUP=com.blindbugs.android
 
-POM_DESCRIPTION=A modern implementation of the pull-to-refresh for Android
-POM_URL=https://github.com/chrisbanes/ActionBar-PullToRefresh
-POM_SCM_URL=https://github.com/chrisbanes/ActionBar-PullToRefresh
-POM_SCM_CONNECTION=scm:git@github.com:chrisbanes/ActionBar-PullToRefresh.git
-POM_SCM_DEV_CONNECTION=scm:git@github.com:chrisbanes/ActionBar-PullToRefresh.git
+POM_DESCRIPTION=My fancy library uploaded to a maven repo
+POM_URL=https://github.com/sergiandreplace/mylib
+POM_SCM_URL=https://github.com/sergiandreplace/mylib
+POM_SCM_CONNECTION=scm:git@github.com:sergiandreplace/mylib.git
+POM_SCM_DEV_CONNECTION=scm:git@github.com:sergiandreplace/mylib.git
 POM_LICENCE_NAME=The Apache Software License, Version 2.0
 POM_LICENCE_URL=http://www.apache.org/licenses/LICENSE-2.0.txt
 POM_LICENCE_DIST=repo
-POM_DEVELOPER_ID=chrisbanes
-POM_DEVELOPER_NAME=Chris Banes
-```
+POM_DEVELOPER_ID=BlindBugs
+POM_DEVELOPER_NAME=Sergi Martínez
 
-The `VERSION_NAME` value is important. If it contains the keyword `SNAPSHOT` then the build will upload to the snapshot server, if not then to the release server.
-
-### 4. Create gradle.properties in each sub-project
-The values in this file are specific to the sub-project (and override those in the root `gradle.properties`). In this example, this is just the name, artifactId and packaging type:
-
-```properties
-POM_NAME=ActionBar-PullToRefresh Library
-POM_ARTIFACT_ID=library
+POM_NAME=My Lib
+POM_ARTIFACT_ID=mylib
 POM_PACKAGING=aar
+
 ```
 
-### 5. Call the script from each sub-modules build.gradle
+
+### 3. Call the script from each sub-modules build.gradle
 
 Add the following at the end of each `build.gradle` that you wish to upload:
 
 ```groovy
-apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'
+apply from: 'https://raw.github.com/sergiandreplace/gradle-local-mvn-push/master/gradle-local-mvn-push.gradle'
 ```
 
-### 6. Build and Push
+### 4. Build and Push
 
 You can now build and push:
 
 ```bash
 $ gradle clean build uploadArchives
 ```
-	
-### Other Properties
-
-There are other properties which can be set:
-
-```
-RELEASE_REPOSITORY_URL (defaults to Maven Central's staging server)
-SNAPSHOT_REPOSITORY_URL (defaults to Maven Central's snapshot server)
-```
+Note for Windows users: remember that if you are using the graddle wrapper, you must execute gradlew instead gradle
 
 ## License
 
